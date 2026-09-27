@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>小朋友學AI</title>
+<meta name="description" content="小朋友學AI：給孩子的互動學習頁">
+<style>
+:root{
+  --bg:#F6F8FB;
+  --card:#FFFFFF;
+  --ink:#1F2A44;
+  --ink-soft:#55607A;
+  --line:#D6DEE8;
+  --accent:#E07A2E;
+  --accent-soft:#FDEBDD;
+  --hover:#2F6FDB;
+  --shadow:rgba(31,42,68,.08);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A24;
+    --card:#1C2431;
+    --ink:#E8ECF2;
+    --ink-soft:#A9B3C3;
+    --line:#2E3A4C;
+    --accent:#F2A65A;
+    --accent-soft:#3A2A1C;
+    --hover:#8DB6FF;
+    --shadow:rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A24;
+  --card:#1C2431;
+  --ink:#E8ECF2;
+  --ink-soft:#A9B3C3;
+  --line:#2E3A4C;
+  --accent:#F2A65A;
+  --accent-soft:#3A2A1C;
+  --hover:#8DB6FF;
+  --shadow:rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-size:1.0625rem;line-height:1.7}
+.wrap{max-width:720px;margin:0 auto;padding:40px 16px 56px}
+.kicker{margin:0;color:var(--accent);font-weight:700;letter-spacing:.12em;font-size:.9rem}
+h1{margin:.15em 0 .35em;font-size:clamp(2rem,1.6rem + 2vw,2.6rem);line-height:1.2}
+.lede{margin:0 0 28px;color:var(--ink-soft)}
+ul{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.card{display:flex;align-items:center;gap:16px;padding:18px 18px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;color:inherit;text-decoration:none;box-shadow:0 4px 14px var(--shadow);transition:border-color .15s,transform .15s}
+.card:hover{border-color:var(--hover);transform:translateY(-2px)}
+.card:focus-visible{outline:3px solid var(--hover);outline-offset:3px}
+.num{flex:none;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
+.body{flex:1;min-width:0;display:flex;flex-direction:column}
+.name{font-weight:700;font-size:1.2rem}
+.desc{color:var(--ink-soft);font-size:.98rem}
+.go{flex:none;font-size:1.8rem;color:var(--ink-soft);line-height:1}
+footer{margin-top:32px;padding-top:16px;border-top:1px dashed var(--line);color:var(--ink-soft);font-size:.92rem}
+@media (prefers-reduced-motion: reduce){.card{transition:none}.card:hover{transform:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="kicker">給孩子的互動學習頁</p>
+  <h1>小朋友學AI</h1>
+  <p class="lede">每一頁都是一個小關卡，點進去就能玩，不用登入。建議爸媽陪著一起看。</p>
+  <ul>
+      <li>
+        <a class="card" href="%E5%B0%8F%E6%9C%8B%E5%8F%8B%E5%AD%B8AI-AI%E6%9C%83%E5%94%AC%E7%88%9B.html">
+          <span class="num">01</span>
+          <span class="body">
+            <span class="name">AI 會唬爛</span>
+            <span class="desc">AI 有時會很有自信地說錯。學會三招不被騙：自己查、問大人、多找一個地方對答案。</span>
+          </span>
+          <span class="go" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </li>
+      <li>
+        <a class="card" href="%E5%B0%8F%E6%9C%8B%E5%8F%8B%E5%AD%B8AI-%E6%80%8E%E9%BA%BC%E5%95%8F%E5%BE%97%E5%A5%BD.html">
+          <span class="num">02</span>
+          <span class="body">
+            <span class="name">怎麼問得好</span>
+            <span class="desc">同一件事，問法不同答案就差很多。練習講清楚、給背景、說形式，讓 AI 真的幫得上忙。</span>
+          </span>
+          <span class="go" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </li>
+      <li>
+        <a class="card" href="%E5%B0%8F%E6%9C%8B%E5%8F%8B%E5%AD%B8AI-%E7%A7%98%E5%AF%86%E4%B8%8D%E8%83%BD%E8%AA%AA.html">
+          <span class="num">03</span>
+          <span class="body">
+            <span class="name">秘密不能說</span>
+            <span class="desc">分清楚哪些話可以跟 AI 或網路上的人說，哪些能找到你本人的資料要收好。</span>
+          </span>
+          <span class="go" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </li>
+      <li>
+        <a class="card" href="%E5%B0%8F%E6%9C%8B%E5%8F%8B%E5%AD%B8AI-%E5%A4%A9%E5%B9%B3%E8%A7%A3%E6%96%B9%E7%A8%8B%E5%BC%8F.html">
+          <span class="num">04</span>
+          <span class="body">
+            <span class="name">天平解方程式</span>
+            <span class="desc">用天平一步一步看懂解方程式：兩邊做一樣的事就不會歪，數字搬過等號符號要翻過來。</span>
+          </span>
+          <span class="go" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </li>
+  </ul>
+  <footer>
+    <p>頁面不需要登入，也不會蒐集孩子的資料。</p>
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,1219 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>天平解方程式</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif:ital,wght@1,500;1,700&display=swap');
+
+:root{
+  --paper:#F7F9FB;
+  --grid:#DCE4EC;
+  --ink:#1F2A44;
+  --ink-soft:#55607A;
+  --x:#2F6FDB;
+  --x-soft:#DCE8FB;
+  --x-on:#FFFFFF;
+  --const:#D9822B;
+  --const-text:#B45F17;
+  --const-on:#FFFFFF;
+  --red:#D64545;
+  --red-soft:rgba(214,69,69,.10);
+  --hl:rgba(255,227,110,.62);
+  --hl-line:rgba(255,227,110,.30);
+  --hl-solid:#FFE36E;
+  --card:#FFFFFF;
+  --line:#C9D3DE;
+  --shadow:rgba(31,42,68,.10);
+  --beam:#1F2A44;
+  --plate:#55607A;
+  --focus:#2F6FDB;
+  --btn-bg:#FFFFFF;
+  --btn-ink:#1F2A44;
+  --btn-primary:#1F2A44;
+  --btn-primary-ink:#F7F9FB;
+  --font-hand:"LXGW WenKai TC","LXGW WenKai","Kaiti TC","BiauKai","DFKai-SB","標楷體",serif;
+  --font-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
+  --font-var:"Noto Serif","Times New Roman",Georgia,serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#1E2B26;
+    --grid:#2E3D37;
+    --ink:#EDEFEA;
+    --ink-soft:#B4BDB5;
+    --x:#7EB0FF;
+    --x-soft:#223A55;
+    --x-on:#0E1B2E;
+    --const:#F2A65A;
+    --const-text:#F6B574;
+    --const-on:#2A1706;
+    --red:#FF7B7B;
+    --red-soft:rgba(255,123,123,.14);
+    --hl:rgba(255,227,110,.30);
+    --hl-line:rgba(255,227,110,.12);
+    --hl-solid:#FFE36E;
+    --card:#23332D;
+    --line:#3B4D45;
+    --shadow:rgba(0,0,0,.35);
+    --beam:#EDEFEA;
+    --plate:#B4BDB5;
+    --focus:#9CC3FF;
+    --btn-bg:#23332D;
+    --btn-ink:#EDEFEA;
+    --btn-primary:#EDEFEA;
+    --btn-primary-ink:#1E2B26;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1E2B26;
+  --grid:#2E3D37;
+  --ink:#EDEFEA;
+  --ink-soft:#B4BDB5;
+  --x:#7EB0FF;
+  --x-soft:#223A55;
+  --x-on:#0E1B2E;
+  --const:#F2A65A;
+  --const-text:#F6B574;
+  --const-on:#2A1706;
+  --red:#FF7B7B;
+  --red-soft:rgba(255,123,123,.14);
+  --hl:rgba(255,227,110,.30);
+  --hl-line:rgba(255,227,110,.12);
+  --hl-solid:#FFE36E;
+  --card:#23332D;
+  --line:#3B4D45;
+  --shadow:rgba(0,0,0,.35);
+  --beam:#EDEFEA;
+  --plate:#B4BDB5;
+  --focus:#9CC3FF;
+  --btn-bg:#23332D;
+  --btn-ink:#EDEFEA;
+  --btn-primary:#EDEFEA;
+  --btn-primary-ink:#1E2B26;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:26px 26px;
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:1.125rem;
+  line-height:1.65;
+  overflow-x:clip;
+}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:6px}
+var{font-family:var(--font-var);font-style:italic;font-weight:600;color:var(--x);margin:0 .06em}
+.n{font-variant-numeric:tabular-nums lining-nums}
+
+.wrap{max-width:1180px;margin:0 auto;padding-inline:clamp(16px,4vw,36px);padding-block:22px 72px}
+
+/* ---------- 標題 ---------- */
+.kicker{margin:0;color:var(--ink-soft);font-size:1rem}
+h1{font-family:var(--font-hand);font-size:clamp(2.2rem,1.6rem + 2.4vw,3.2rem);line-height:1.2;margin:.1em 0 .3em;letter-spacing:.04em}
+.lede{max-width:60ch;margin:0 0 1.1rem;font-size:clamp(1.1rem,1rem + .4vw,1.25rem)}
+.lede strong{font-weight:700;background:linear-gradient(transparent 58%,var(--hl) 58%)}
+
+/* ---------- 題目選單 ---------- */
+.tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:0 0 6px}
+.tab{font:inherit;text-align:left;background:var(--btn-bg);color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;display:flex;flex-direction:column;gap:0;min-height:60px;justify-content:center}
+.tab:hover{border-color:var(--ink-soft)}
+.tab[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 -5px 0 var(--hl-solid)}
+.tab[hidden]{display:none}
+.tab-k{font-size:.9rem;color:var(--ink-soft)}
+.tab-eq{font-size:1.2rem;white-space:nowrap;font-weight:500}
+.tab-eq .op{margin:0 .22em}
+
+/* ---------- 控制列 ---------- */
+.controls{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 0;background:var(--paper);border-bottom:1px solid var(--grid)}
+.btn{font:inherit;font-size:1.1rem;font-weight:700;min-height:52px;padding:0 20px;border-radius:12px;border:2px solid var(--ink);background:var(--btn-bg);color:var(--btn-ink);cursor:pointer;touch-action:manipulation}
+.btn.primary{background:var(--btn-primary);color:var(--btn-primary-ink)}
+.btn:disabled{opacity:.38;cursor:not-allowed}
+.btn[aria-pressed="true"]{box-shadow:inset 0 -5px 0 var(--hl-solid)}
+.stepinfo{margin-left:auto;font-size:1rem;color:var(--ink-soft)}
+
+/* ---------- 老師旁白＋口訣卡 ---------- */
+.talk{display:grid;gap:14px;margin:14px 0;grid-template-columns:minmax(0,1fr)}
+@media (min-width:900px){.talk{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:stretch}}
+.teacher{position:relative;padding:14px 18px 14px 28px;background:var(--card);border:1px solid var(--line);border-radius:12px;font-family:var(--font-hand);min-height:128px}
+.teacher::before{content:"";position:absolute;left:12px;top:14px;bottom:14px;width:4px;border-radius:2px;background:var(--red)}
+.say{font-size:clamp(1.3rem,1.1rem + .7vw,1.6rem);line-height:1.5;margin:0 0 6px}
+.why{font-size:clamp(1.15rem,1.05rem + .4vw,1.35rem);margin:0;color:var(--red);transition:opacity .4s}
+.why.wait{opacity:0}
+.why b{background:linear-gradient(transparent 58%,var(--hl) 58%);font-weight:700}
+.say .op,.why .op{margin:0 .15em}
+
+.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-content:start}
+@media (min-width:600px) and (max-width:899px){.rules{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.rules-h{grid-column:1/-1;margin:0;font-family:var(--font-hand);font-size:1.15rem;color:var(--ink-soft)}
+.rule{border:2px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--card);transition:background-color .35s,border-color .35s,transform .35s}
+.rule b{display:block;font-family:var(--font-hand);font-size:clamp(1.25rem,1.1rem + .5vw,1.5rem);white-space:nowrap}
+.rule .ro{font-family:var(--font-body);font-weight:700;display:inline-block;min-width:.9em;text-align:center}
+.rule .ro.to{color:var(--red)}
+.rule small{display:block;font-size:.92rem;color:var(--ink-soft)}
+.rule.lit{border-color:var(--red);background:var(--hl-line);transform:translateY(-2px);box-shadow:0 0 0 3px var(--hl-solid)}
+
+/* ---------- 舞台 ---------- */
+.stage{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:900px){.stage{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:start}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px var(--shadow),0 8px 22px var(--shadow);padding:14px 16px 16px;min-width:0}
+.panel h2{font-family:var(--font-hand);font-size:1.4rem;margin:0 0 6px;display:flex;flex-wrap:wrap;gap:.2em .6em;align-items:baseline}
+.h2-sub{font-family:var(--font-body);font-size:1rem;color:var(--ink-soft);font-weight:400}
+
+/* 天平 */
+.bal-stage{position:relative;height:312px;overflow:hidden;user-select:none}
+.bal-stage .beam{position:absolute;left:4%;right:4%;top:234px;height:8px;border-radius:4px;background:var(--beam)}
+.bal-stage .fulcrum{position:absolute;left:calc(50% - 32px);top:242px;width:64px;height:36px;background:var(--beam);clip-path:polygon(50% 0,100% 100%,0 100%);opacity:.9}
+.bal-stage .ground{position:absolute;left:28%;right:28%;top:278px;height:3px;border-radius:2px;background:var(--beam)}
+.plate{position:absolute;top:226px;height:8px;border-radius:4px 4px 1px 1px;background:var(--plate)}
+.level{position:absolute;left:50%;top:284px;transform:translateX(-50%);font-family:var(--font-hand);font-size:1rem;line-height:1.4;padding:0 .7em;border-radius:999px;border:1.5px solid var(--ink);background:var(--card);white-space:nowrap}
+.sidelab{position:absolute;top:284px;transform:translateX(-50%);font-size:.95rem;color:var(--ink-soft)}
+.bal-op{position:absolute;top:244px;transform:translateX(-50%);font-family:var(--font-hand);font-weight:700;font-size:1.7rem;line-height:1.2;color:var(--red);opacity:0;transition:opacity .3s;white-space:nowrap}
+.bal-op.show{opacity:1}
+.items{position:absolute;inset:0}
+.item{position:absolute;left:0;top:0;display:flex;align-items:center;justify-content:center;z-index:3;transition:transform .6s cubic-bezier(.3,.7,.3,1),opacity .45s,translate .6s ease-in,scale .4s ease-in}
+.bal-stage.instant .item{transition:none}
+.it-x{width:34px;height:34px;border-radius:5px;background:var(--x);font-size:20px}
+.it-x var{color:var(--x-on);margin:0}
+.it-w{width:22px;height:22px;border-radius:8px 8px 3px 3px;background:var(--const);color:var(--const-on);font-size:12px;font-weight:700;line-height:1}
+.it-w.mini{scale:.64}
+.it-xs{width:34px;height:34px}
+.xs-body{display:grid;width:100%;height:100%;gap:2px}
+.xs-body .sl{display:block;border:1.5px dashed var(--x);border-radius:3px;background:transparent;transition:background-color .35s,border-color .35s}
+.xs-body .sl.on{background:var(--x);border-style:solid}
+.it-xs.fill .sl{background:var(--x);border-style:solid}
+.it-xs.fill .sl:nth-child(2){transition-delay:.12s}
+.it-xs.fill .sl:nth-child(3){transition-delay:.24s}
+.it-xs.fill .sl:nth-child(4){transition-delay:.36s}
+.it-xs.fill .sl:nth-child(5){transition-delay:.48s}
+.it-xs.fill .sl:nth-child(6){transition-delay:.6s}
+.xs-lab{position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);white-space:nowrap;font-size:14px;line-height:1.2;color:var(--x);font-weight:700}
+.xs-lab var{margin:0 .1em 0 0}
+.it-bk{flex-direction:column;justify-content:flex-start;align-items:flex-start;border:2px solid var(--red);border-radius:4px 4px 10px 10px;background:var(--red-soft);padding:0 4px 4px}
+.bk-lab{font-family:var(--font-hand);font-size:13px;line-height:18px;color:var(--red);font-weight:700;white-space:nowrap}
+.bk-slots{display:grid;gap:2px}
+.bk-slots i{display:block;width:14px;height:14px;border:1.5px dashed var(--red);border-radius:3px}
+.it-bk.full{box-shadow:0 0 0 4px var(--hl-solid)}
+.item.marked{box-shadow:0 0 0 3px var(--red)}
+.item.gone-lift{translate:0 -80px;opacity:0}
+.item.gone-pop{scale:.1;opacity:0}
+.gsep{position:absolute;width:0;border-left:2.5px dashed var(--red);z-index:4}
+.glabel{position:absolute;transform:translateX(-50%);font-family:var(--font-hand);font-weight:700;font-size:1.05rem;color:var(--red);white-space:nowrap;z-index:4}
+.bal-fade{display:none;position:absolute;inset:0;align-items:center;justify-content:center;padding:16px;z-index:10}
+.bal-fade p{margin:0;max-width:30ch;font-family:var(--font-hand);font-size:1.2rem;line-height:1.55;text-align:center;background:var(--card);border:2px dashed var(--red);border-radius:12px;padding:12px 16px}
+.bal-stage.is-faded > :not(.bal-fade){opacity:.12}
+.bal-stage.is-faded .bal-fade{display:flex}
+.bal-cap{margin:8px 0 6px;font-family:var(--font-hand);font-size:clamp(1.1rem,1rem + .35vw,1.25rem);min-height:2.6em}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;margin:0;padding:0;list-style:none;font-size:.95rem;color:var(--ink-soft)}
+.legend li{display:flex;align-items:center;gap:6px}
+.lg{display:inline-block;width:18px;height:18px;border-radius:4px}
+.lg-x{background:var(--x)}
+.lg-w{background:var(--const);border-radius:6px 6px 2px 2px}
+.lg-bk{border:2px dashed var(--red);background:var(--red-soft)}
+.lg-xs{background:linear-gradient(90deg,var(--x) 25%,transparent 25%);border:1.5px dashed var(--x)}
+
+/* 作業簿 */
+.board-panel{position:relative;background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:30px 30px}
+.board-panel{border-left:4px double var(--red)}
+.dots{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px;padding:0;list-style:none}
+.dot{font:inherit;font-size:1rem;font-weight:700;min-width:44px;height:44px;border-radius:22px;border:2px solid var(--line);background:var(--card);color:var(--ink-soft);cursor:pointer;padding:0 10px}
+.dot.done{border-color:var(--ink-soft);color:var(--ink)}
+.dot[aria-current="step"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.lines{--eqfs:clamp(28px,1.1vw + 22px,40px);display:grid;grid-template-columns:minmax(max-content,1fr) 1.5em minmax(max-content,1fr) minmax(0,auto);overflow-x:auto;padding:4px 2px 10px;font-size:var(--eqfs)}
+.eqline{grid-column:1/-1;display:grid;grid-template-columns:subgrid;align-items:center;padding:6px 6px;border-radius:8px;white-space:nowrap;opacity:.5;line-height:1.35}
+.eqline.current{opacity:1;background:var(--hl-line)}
+.lhs{justify-self:end;display:flex;align-items:center}
+.rhs{justify-self:start;display:flex;align-items:center}
+.eqs{text-align:center}
+.op{display:inline-block;margin:0 .28em;color:var(--ink)}
+.n{color:var(--const-text)}
+.chunk,.num-only,.xv{display:inline-flex;align-items:center;position:relative;border-radius:4px}
+.chunk .op.flip{color:var(--red);font-weight:700}
+.chunk.hl,.num-only.hl{background:linear-gradient(transparent 55%,var(--hl) 55%)}
+.chunk.circled::after{content:"";position:absolute;inset:-.14em -.12em;border:3px solid var(--red);border-radius:50%;transform:rotate(-5deg);pointer-events:none}
+.chunk.circled.draw::after{animation:draw .45s ease-out both}
+@keyframes draw{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.pending{visibility:hidden}
+.arrive{animation:arrive .55s cubic-bezier(.2,1.4,.4,1)}
+@keyframes arrive{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+.tag{font-family:var(--font-hand);font-size:.5em;padding-left:1em;white-space:nowrap}
+.tag-pen{color:var(--red);font-weight:700}
+.calc{display:inline-block;padding:0 .3em;border-radius:4px;background:linear-gradient(transparent 45%,var(--hl) 45%);color:var(--ink);font-family:var(--font-body);font-weight:500}
+.calc .n{color:var(--ink)}
+.calc b{font-weight:700;color:var(--red)}
+.tag.writing .calc{animation:write .8s steps(12,end) both}
+@keyframes write{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.tag.pending{visibility:hidden}
+
+.flyer{position:absolute;z-index:40;display:inline-flex;align-items:center;white-space:nowrap;pointer-events:none;padding:0 .12em;border-radius:6px;background:var(--hl);line-height:1.35}
+.flyer .op{margin:0 .18em}
+.flyer.flipped .op{color:var(--red);font-weight:700;animation:signflip .55s ease-out}
+@keyframes signflip{0%{transform:rotateY(90deg) scale(2)}55%{transform:rotateY(0) scale(2)}100%{transform:scale(1)}}
+.flyer .fnote{position:absolute;left:50%;bottom:calc(100% + 2px);transform:translateX(-50%);font-family:var(--font-hand);font-weight:700;font-size:.62em;color:var(--red);opacity:0;white-space:nowrap}
+.flyer.flipped .fnote{animation:fnote 1s ease-out both}
+@keyframes fnote{0%{opacity:0;transform:translate(-50%,6px) scale(.6)}25%{opacity:1;transform:translate(-50%,0) scale(1.25)}80%{opacity:1}100%{opacity:0}}
+.flyer.flipped::after{content:"";position:absolute;inset:-.25em -.35em;border:3px solid var(--red);border-radius:50%;animation:burst .6s ease-out forwards}
+@keyframes burst{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+
+.result{margin-top:8px;padding:10px 12px 4px;border-top:2px dashed var(--line);font-size:clamp(1.2rem,1rem + .7vw,1.5rem)}
+.result p{margin:.3em 0;display:flex;flex-wrap:wrap;align-items:center;gap:0 .2em}
+.result .op{margin:0 .22em}
+.result .hl{background:linear-gradient(transparent 55%,var(--hl) 55%);border-radius:3px;padding:0 .1em}
+.rrow.pending{visibility:hidden}
+.rrow.rise{animation:rise .45s ease-out both}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.stamp{display:inline-block;margin-left:.5em;font-family:var(--font-hand);font-weight:700;font-size:1.25em;color:var(--red);border:4px double var(--red);border-radius:10px;padding:0 .5em;transform:rotate(-8deg)}
+.stamp.wait{opacity:0}
+.stamp.go{animation:stamp .55s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes stamp{from{transform:rotate(-8deg) scale(2.6);opacity:0}to{transform:rotate(-8deg) scale(1);opacity:1}}
+
+/* ---------- 自己出題 ---------- */
+.sec{margin-top:36px}
+.sec > h2{font-family:var(--font-hand);font-size:clamp(1.6rem,1.3rem + 1vw,2rem);margin:0 0 4px}
+.sec > p.sub{margin:0 0 12px;color:var(--ink-soft)}
+.custom{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.field{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:12px}
+.field label{font-weight:700}
+select,input[type="number"]{font:inherit;font-size:1.25rem;min-height:52px;border:2px solid var(--ink-soft);border-radius:10px;background:var(--paper);color:var(--ink);padding:0 10px}
+select{padding-right:6px;cursor:pointer}
+input[type="number"]{width:4.2em;text-align:center;font-variant-numeric:tabular-nums}
+.eqform{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:1.5rem}
+.eqform[hidden]{display:none}
+.eqform .t{white-space:nowrap}
+.preview{margin:12px 0 4px;font-size:1.15rem}
+.preview .op{margin:0 .2em}
+.hint{min-height:1.8em;margin:4px 0 12px;font-family:var(--font-hand);font-size:1.25rem;color:var(--red)}
+.hint.ok{color:var(--ink)}
+
+/* ---------- 常見錯誤 ---------- */
+.flips{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.flip{font:inherit;color:inherit;text-align:left;background:none;border:0;padding:0;cursor:pointer;perspective:1200px;display:block;width:100%}
+.flip-in{display:grid;transition:transform .6s;transform-style:preserve-3d}
+.flip[aria-pressed="true"] .flip-in{transform:rotateY(180deg)}
+.face{grid-area:1/1;display:block;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:0 1px 2px var(--shadow),0 6px 16px var(--shadow)}
+.face.back{transform:rotateY(180deg);background-color:var(--paper)}
+.face-h{display:block;font-family:var(--font-hand);font-weight:700;font-size:1.3rem;margin-bottom:6px}
+.face-h .red{color:var(--red)}
+.work{display:block;font-size:1.4rem;line-height:1.9;white-space:nowrap}
+.work .op{margin:0 .22em}
+.face-note{display:block;font-family:var(--font-hand);font-size:1.12rem;margin-top:6px}
+.face-note.red{color:var(--red)}
+.tap{display:block;margin-top:8px;font-size:.95rem;color:var(--ink-soft)}
+.oops{position:relative;display:inline-block;padding:0 .12em}
+.oops::after{content:"";position:absolute;inset:-.1em -.2em;border:3px solid var(--red);border-radius:50%;transform:rotate(-5deg);pointer-events:none}
+.good{color:var(--red);font-weight:700}
+
+footer{margin-top:40px;color:var(--ink-soft);font-size:.98rem}
+
+@media (max-width:640px){
+  .lines{grid-template-columns:minmax(max-content,1fr) 1.3em minmax(max-content,1fr)}
+  .eqline .tag{grid-column:1/-1;justify-self:center;padding-left:0;font-size:.58em;margin-top:2px}
+  .btn{padding:0 14px;font-size:1.05rem}
+  .stepinfo{margin-left:0;width:100%}
+  .tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.001ms!important;transition-delay:0s!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="kicker">小學五年級．用天平學解方程式</p>
+    <h1>天平解方程式</h1>
+    <p class="lede">等號就像一座天平，左右兩邊一樣重。兩邊同時做一樣的事，天平就不會歪。從天平會發現一個捷徑：<strong>數字搬到等號另一邊，符號要翻過來。</strong>最後把答案放回題目檢查，一樣就對了。</p>
+  </header>
+
+  <nav class="tabs" id="tabs" aria-label="選一題">
+    <button type="button" class="tab" id="ex-1" data-ex="0" aria-pressed="true"><span class="tab-k">第 1 題．加</span><span class="tab-eq" id="ex-1-eq"></span></button>
+    <button type="button" class="tab" id="ex-2" data-ex="1" aria-pressed="false"><span class="tab-k">第 2 題．減</span><span class="tab-eq" id="ex-2-eq"></span></button>
+    <button type="button" class="tab" id="ex-3" data-ex="2" aria-pressed="false"><span class="tab-k">第 3 題．乘</span><span class="tab-eq" id="ex-3-eq"></span></button>
+    <button type="button" class="tab" id="ex-4" data-ex="3" aria-pressed="false"><span class="tab-k">第 4 題．除</span><span class="tab-eq" id="ex-4-eq"></span></button>
+    <button type="button" class="tab" id="ex-5" data-ex="4" aria-pressed="false"><span class="tab-k">第 5 題．兩步</span><span class="tab-eq" id="ex-5-eq"></span></button>
+    <button type="button" class="tab" id="ex-custom" data-ex="custom" aria-pressed="false" hidden><span class="tab-k">我出的題目</span><span class="tab-eq" id="ex-custom-eq"></span></button>
+  </nav>
+
+  <div class="controls" id="controls" role="group" aria-label="步驟控制">
+    <button type="button" class="btn" id="btn-prev">上一步</button>
+    <button type="button" class="btn primary" id="btn-next">下一步</button>
+    <button type="button" class="btn" id="btn-play" aria-pressed="false">自動播放</button>
+    <button type="button" class="btn" id="btn-reset">重來</button>
+    <span class="stepinfo" id="stepinfo" aria-live="polite"></span>
+  </div>
+
+  <section class="talk" aria-label="老師說明">
+    <div class="teacher" id="teacher" aria-live="polite">
+      <p class="say" id="say"></p>
+      <p class="why" id="why"></p>
+    </div>
+    <div class="rules" aria-label="從天平發現的捷徑">
+      <p class="rules-h">從天平發現的捷徑</p>
+      <div class="rule" id="rule-plus" data-op="+"><b><span class="ro">+</span> 過去變 <span class="ro to">−</span></b><small>兩邊同時拿掉</small></div>
+      <div class="rule" id="rule-minus" data-op="−"><b><span class="ro">−</span> 過去變 <span class="ro to">+</span></b><small>兩邊同時放進去</small></div>
+      <div class="rule" id="rule-times" data-op="×"><b><span class="ro">×</span> 過去變 <span class="ro to">÷</span></b><small>兩邊同時平均分</small></div>
+      <div class="rule" id="rule-div" data-op="÷"><b><span class="ro">÷</span> 過去變 <span class="ro to">×</span></b><small>兩邊同時變成幾倍</small></div>
+    </div>
+  </section>
+
+  <section class="stage" aria-label="天平和作業簿">
+    <div class="panel bal-panel">
+      <h2>天平</h2>
+      <div class="bal-stage" id="bal-stage" role="img" aria-label="天平">
+        <div class="plate" id="plate-L"></div>
+        <div class="plate" id="plate-R"></div>
+        <div class="beam"></div>
+        <div class="fulcrum"></div>
+        <div class="ground"></div>
+        <div class="level" id="level">平衡</div>
+        <div class="bal-op" id="op-L" style="left:25%"></div>
+        <div class="bal-op" id="op-R" style="left:75%"></div>
+        <div class="sidelab" style="left:25%">左邊</div>
+        <div class="sidelab" style="left:75%">右邊</div>
+        <div class="items" id="bal-items"></div>
+        <div class="bal-fade" id="bal-fade"><p id="bal-fade-msg"></p></div>
+      </div>
+      <p class="bal-cap" id="bal-cap"></p>
+      <ul class="legend" aria-label="圖例">
+        <li><i class="lg lg-x"></i>藍方塊＝x</li>
+        <li><i class="lg lg-w"></i>橘砝碼＝1</li>
+        <li><i class="lg lg-bk"></i>小籃子＝少了幾個</li>
+        <li><i class="lg lg-xs"></i>切塊＝x 的幾分之一</li>
+      </ul>
+    </div>
+
+    <div class="panel board-panel" id="board-panel">
+      <h2>作業簿 <span class="h2-sub" id="board-title"></span></h2>
+      <ol class="dots" id="dots" aria-label="跳到第幾步"></ol>
+      <div class="lines" id="lines"></div>
+      <div id="result"></div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="custom-h">
+    <h2 id="custom-h">自己出題</h2>
+    <p class="sub">選一種題型，填 1 到 99 的整數，就會一步一步演給你看。</p>
+    <form class="custom" id="custom-form" novalidate>
+      <div class="field">
+        <label for="custom-type">題型</label>
+        <select id="custom-type">
+          <option value="one">一步題：x ○ a = b</option>
+          <option value="two">兩步題：a × x ○ b = c</option>
+        </select>
+      </div>
+      <div class="eqform" id="form-one">
+        <span class="t"><var>x</var></span>
+        <select id="one-op" aria-label="運算符號">
+          <option value="+">+</option>
+          <option value="-">−</option>
+          <option value="*" selected>×</option>
+          <option value="/">÷</option>
+        </select>
+        <input id="one-a" type="number" min="1" max="99" step="1" value="6" aria-label="a">
+        <span class="t">=</span>
+        <input id="one-b" type="number" min="1" max="99" step="1" value="42" aria-label="b">
+      </div>
+      <div class="eqform" id="form-two" hidden>
+        <input id="two-a" type="number" min="1" max="99" step="1" value="3" aria-label="a">
+        <span class="t">× <var>x</var></span>
+        <select id="two-op" aria-label="運算符號">
+          <option value="+">+</option>
+          <option value="-">−</option>
+        </select>
+        <input id="two-b" type="number" min="1" max="99" step="1" value="4" aria-label="b">
+        <span class="t">=</span>
+        <input id="two-c" type="number" min="1" max="99" step="1" value="19" aria-label="c">
+      </div>
+      <p class="preview" id="custom-preview"></p>
+      <p class="hint" id="custom-msg" role="status" aria-live="polite"></p>
+      <button type="submit" class="btn primary" id="btn-custom">用這題來練習</button>
+    </form>
+  </section>
+
+  <section class="sec" aria-labelledby="oops-h">
+    <h2 id="oops-h">常見錯誤</h2>
+    <p class="sub">點一下卡片，翻過來看正解。</p>
+    <div class="flips">
+      <button type="button" class="flip" id="mistake-1" aria-pressed="false">
+        <span class="flip-in">
+          <span class="face front">
+            <span class="face-h"><span class="red">錯誤 1</span>　移過去忘了變號</span>
+            <span class="work"><var>x</var><span class="op">+</span>5<span class="op">=</span>12</span>
+            <span class="work"><var>x</var><span class="op">=</span>12 <span class="oops"><span class="op">+</span>5</span></span>
+            <span class="work"><var>x</var><span class="op">=</span>17</span>
+            <span class="face-note red">＋5 搬過去，符號沒有翻！</span>
+            <span class="tap">點一下看正解</span>
+          </span>
+          <span class="face back" aria-hidden="true">
+            <span class="face-h">正解</span>
+            <span class="work"><var>x</var><span class="op">+</span>5<span class="op">=</span>12</span>
+            <span class="work"><var>x</var><span class="op">=</span>12<span class="op good">−</span>5</span>
+            <span class="work"><var>x</var><span class="op">=</span>7</span>
+            <span class="face-note">+ 過去要變 −。檢查：7 + 5 = 12，對了！</span>
+          </span>
+        </span>
+      </button>
+      <button type="button" class="flip" id="mistake-2" aria-pressed="false">
+        <span class="flip-in">
+          <span class="face front">
+            <span class="face-h"><span class="red">錯誤 2</span>　× 過去寫成 −</span>
+            <span class="work">3<span class="op">×</span><var>x</var><span class="op">=</span>18</span>
+            <span class="work"><var>x</var><span class="op">=</span>18 <span class="oops"><span class="op">−</span>3</span></span>
+            <span class="work"><var>x</var><span class="op">=</span>15</span>
+            <span class="face-note red">× 搬過去，不是變成 −！</span>
+            <span class="tap">點一下看正解</span>
+          </span>
+          <span class="face back" aria-hidden="true">
+            <span class="face-h">正解</span>
+            <span class="work">3<span class="op">×</span><var>x</var><span class="op">=</span>18</span>
+            <span class="work"><var>x</var><span class="op">=</span>18<span class="op good">÷</span>3</span>
+            <span class="work"><var>x</var><span class="op">=</span>6</span>
+            <span class="face-note">× 過去要變 ÷。檢查：3 × 6 = 18，對了！</span>
+          </span>
+        </span>
+      </button>
+      <button type="button" class="flip" id="mistake-3" aria-pressed="false">
+        <span class="flip-in">
+          <span class="face front">
+            <span class="face-h"><span class="red">卡住 3</span>　兩步題先搬哪一個？</span>
+            <span class="work">2<span class="op">×</span><var>x</var><span class="op">+</span>3<span class="op">=</span>11</span>
+            <span class="face-note">如果先搬 × 2，會變成：</span>
+            <span class="work"><var>x</var><span class="op">+</span><span class="oops">3<span class="op">÷</span>2</span><span class="op">=</span><span class="oops">11<span class="op">÷</span>2</span></span>
+            <span class="face-note red">這樣也可以，只是除不盡，很難算！</span>
+            <span class="tap">點一下看比較好算的順序</span>
+          </span>
+          <span class="face back" aria-hidden="true">
+            <span class="face-h">先移 + −，再移 × ÷，比較好算</span>
+            <span class="work">2<span class="op">×</span><var>x</var><span class="op">=</span>11<span class="op good">−</span>3</span>
+            <span class="work">2<span class="op">×</span><var>x</var><span class="op">=</span>8</span>
+            <span class="work"><var>x</var><span class="op">=</span>8<span class="op good">÷</span>2</span>
+            <span class="work"><var>x</var><span class="op">=</span>4</span>
+            <span class="face-note">先搬 + 3，再搬 × 2，每一步都整整齊齊。</span>
+          </span>
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <footer>
+    <p>鍵盤也可以用：← 上一步、→ 下一步。天平只在能畫對的時候出現；數字太大、要分太多份，或 x 是 0 的時候，天平會先休息，請看作業簿。</p>
+  </footer>
+</main>
+
+<script>
+(function(){
+'use strict';
+
+/* ================= 基本工具 ================= */
+var RM = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches:false };
+function reduced(){ return !!RM.matches; }
+function $(id){ return document.getElementById(id); }
+var INV = { '+':'−', '−':'+', '×':'÷', '÷':'×' };
+var RULE_ID = { '+':'rule-plus', '−':'rule-minus', '×':'rule-times', '÷':'rule-div' };
+var OPMAP = { '+':'+', '-':'−', '*':'×', '/':'÷' };
+var CN = ['零','一','二','三','四','五','六','七','八','九','十'];
+function cnum(n){ return n <= 10 ? CN[n] : String(n); }
+function applyOp(v, sym, n){
+  if (sym === '+') return v + n;
+  if (sym === '−') return v - n;
+  if (sym === '×') return v * n;
+  return v / n;
+}
+
+/* ================= 求解器 ================= */
+/* 題型：one = x ○ a = b（例題 3 用 pre:true 寫成 a × x）；two = a × x ○ b = c */
+function opsOf(spec){
+  if (spec.type === 'one') return [{ sym:spec.op, n:spec.a, pre:!!spec.pre, id:'c0' }];
+  return [{ sym:'×', n:spec.a, pre:true, id:'c0' }, { sym:spec.op, n:spec.b, pre:false, id:'c1' }];
+}
+function rightOf(spec){ return spec.type === 'one' ? spec.b : spec.c; }
+function check(spec){
+  var nums = spec.type === 'one' ? [spec.a, spec.b] : [spec.a, spec.b, spec.c];
+  for (var i = 0; i < nums.length; i++){
+    if (!Number.isInteger(nums[i]) || nums[i] < 1 || nums[i] > 99){
+      return { ok:false, code:'range', msg:'每一格都要填 1 到 99 的整數喔。' };
+    }
+  }
+  var ops = opsOf(spec), v = rightOf(spec);
+  for (var k = ops.length - 1; k >= 0; k--){
+    var inv = INV[ops[k].sym], n = ops[k].n;
+    if (inv === '−' && v - n < 0) return { ok:false, code:'neg', msg:'這題的答案會變成負數，五年級還沒學，換個數字吧。' };
+    if (inv === '÷' && v % n !== 0) return { ok:false, code:'frac', msg:'這題除不盡，換個數字吧。' };
+    v = applyOp(v, inv, n);
+  }
+  return { ok:true, sol:v };
+}
+function evalLeft(ops, x){
+  var v = x;
+  for (var i = 0; i < ops.length; i++){ var o = ops[i]; v = o.pre ? o.n * v : applyOp(v, o.sym, o.n); }
+  return v;
+}
+function leftPlain(ops){
+  var s = 'x';
+  for (var i = 0; i < ops.length; i++){ var o = ops[i]; s = o.pre ? (o.n + ' × ' + s) : (s + ' ' + o.sym + ' ' + o.n); }
+  return s;
+}
+function rightPlain(r){ return r.chunk ? (r.base + ' ' + r.chunk.sym + ' ' + r.chunk.n) : String(r.base); }
+function eqPlain(st){ return leftPlain(st.left) + ' = ' + rightPlain(st.right); }
+
+var FADE = {
+  zero:'這題的 x 是 0，x 方塊沒有重量，天平看不出來。這一步先看算式。',
+  big:'數字太大，天平放不下這麼多砝碼。這一步先看算式。',
+  many:'要分的份數太多，天平畫不清楚。這一步先看算式。'
+};
+function balOf(left, w, sol){
+  var L = { x:1, slices:0, plus:0, basket:0 };
+  left.forEach(function(o){
+    if (o.sym === '×') L.x = o.n;
+    else if (o.sym === '÷') L.slices = o.n;
+    else if (o.sym === '+') L.plus = o.n;
+    else L.basket = o.n;
+  });
+  if (sol === 0) return { fade:'zero' };
+  if (L.x > 6 || L.slices > 6) return { fade:'many' };
+  if (L.basket > 10 || L.plus > 36 || w > 36) return { fade:'big' };
+  return { L:L, R:{ w:w } };
+}
+function describeL(L){
+  var p = [];
+  if (L.slices) p.push('x 的' + cnum(L.slices) + '分之一');
+  else p.push(L.x + ' 個 x 方塊');
+  if (L.plus) p.push(L.plus + ' 個砝碼');
+  if (L.basket) p.push('少了 ' + L.basket + ' 個的小籃子');
+  return p.join('、');
+}
+
+function solve(spec){
+  var chk = check(spec);
+  if (!chk.ok) return { ok:false, spec:spec, code:chk.code, msg:chk.msg };
+  var ops = opsOf(spec), R0 = rightOf(spec), sol = chk.sol, steps = [];
+  steps.push({ type:'start', left:ops.slice(), right:{ base:R0 } });
+  var v = R0;
+  for (var k = ops.length - 1; k >= 0; k--){
+    var op = ops[k], inv = INV[op.sym], nv = applyOp(v, inv, op.n), left = ops.slice(0, k);
+    steps.push({ type:'move', op:op, inv:inv, from:v, to:nv, left:left, right:{ base:v, chunk:{ sym:inv, n:op.n, id:op.id } } });
+    steps.push({ type:'calc', op:op, inv:inv, from:v, to:nv, left:left, right:{ base:nv }, more: k > 0 ? ops[k-1] : null });
+    v = nv;
+  }
+  steps.push({ type:'verify', left:[], right:{ base:sol }, sol:sol });
+
+  steps.forEach(function(st, i){
+    st.bal = balOf(st.left, st.type === 'move' ? st.to : st.right.base, sol);
+    var prev = i > 0 ? steps[i-1].bal : null;
+    var canShow = !st.bal.fade;
+    var n = st.op ? st.op.n : 0;
+    if (st.type === 'start'){
+      st.say = '題目：' + eqPlain(st) + '。等號就像天平的中間，左右兩邊一樣重。';
+      var w = '目標：讓 x 自己留在一邊。';
+      if (ops.length === 2) w += '這題要搬兩次：先搬「' + ops[1].sym + ' ' + ops[1].n + '」，再搬「× ' + ops[0].n + '」。先移 + −，再移 × ÷，比較好算。';
+      else if (ops[0].pre) w += ops[0].n + ' × x 就是 ' + ops[0].n + ' 個 x。';
+      st.why = w;
+      st.cap = canShow ? ('左邊：' + describeL(st.bal.L) + '。右邊：' + st.bal.R.w + ' 個砝碼。天平是平的。') : '';
+    } else if (st.type === 'move'){
+      var sym = st.op.sym, full = !st.bal.fade && prev && !prev.fade;
+      if (full){
+        if (sym === '+') st.say = '天平兩邊同時拿掉 ' + n + ' 個砝碼。天平還是平的。';
+        else if (sym === '−') st.say = '左邊的 x 少了 ' + n + '，就像空了 ' + n + ' 格的小籃子。兩邊同時放進 ' + n + ' 個砝碼，天平還是平的。';
+        else if (sym === '×') st.say = (st.op.pre ? n + ' × x' : 'x × ' + n) + ' 就是 ' + n + ' 個 x。兩邊都平均分成 ' + n + ' 份，各拿 1 份，天平還是平的。';
+        else st.say = 'x ÷ ' + n + ' 就是 x 的' + cnum(n) + '分之一。兩邊都變成 ' + n + ' 倍，天平還是平的。';
+      } else {
+        st.say = '把「' + sym + ' ' + n + '」搬到等號的另一邊。';
+      }
+      st.why = '所以，直接把 <b>' + sym + ' ' + n + '</b> 移過去變 <b>' + st.inv + ' ' + n + '</b>，就一樣了！';
+      if (sym === '+') st.cap = '兩邊同時拿掉 ' + n + ' 個砝碼：右邊剩 ' + st.to + ' 個。';
+      else if (sym === '−') st.cap = '兩邊同時放進 ' + n + ' 個砝碼：左邊的籃子補滿了，右邊變成 ' + st.to + ' 個。';
+      else if (sym === '×') st.cap = '兩邊都平均分成 ' + n + ' 份，各留 1 份：1 個 x 方塊對 ' + st.to + ' 個砝碼。';
+      else st.cap = '兩邊都變成 ' + n + ' 倍：x 方塊變完整，右邊變成 ' + st.to + ' 個砝碼。';
+    } else if (st.type === 'calc'){
+      st.say = '算算看：' + st.from + ' ' + st.inv + ' ' + n + ' = ' + st.to + '。';
+      st.why = st.more
+        ? '現在變成 ' + leftPlain(st.left) + ' = ' + st.to + '。x 旁邊還有「' + st.more.sym + ' ' + st.more.n + '」，再搬一次。'
+        : 'x 自己留下來了：<b>x = ' + st.to + '</b>。';
+      st.cap = '右邊數一數：' + st.to + ' 個砝碼。';
+    } else {
+      st.say = '答案是 x = ' + sol + '。把 ' + sol + ' 放回題目，檢查看看。';
+      st.why = '左邊算出來是 ' + R0 + '，右邊也是 ' + R0 + '，一樣，答對了！';
+      st.cap = '1 個 x 方塊和 ' + sol + ' 個砝碼一樣重。';
+    }
+    if (st.bal.fade) st.cap = FADE[st.bal.fade];
+  });
+  return { ok:true, spec:spec, ops:ops, R0:R0, sol:sol, steps:steps };
+}
+
+/* ================= HTML 產生 ================= */
+function nH(n){ return '<span class="n">' + n + '</span>'; }
+function oH(s, cls){ return '<span class="op' + (cls ? ' ' + cls : '') + '">' + s + '</span>'; }
+function leftHTML(ops, circleId){
+  var h = '<span class="xv"><var>x</var></span>';
+  ops.forEach(function(o){
+    var cls = 'chunk' + (circleId === o.id ? ' circled' : '');
+    h = o.pre
+      ? '<span class="' + cls + '" data-cid="' + o.id + '">' + nH(o.n) + oH('×') + '</span>' + h
+      : h + '<span class="' + cls + '" data-cid="' + o.id + '">' + oH(o.sym) + nH(o.n) + '</span>';
+  });
+  return h;
+}
+function rightHTML(r, hlChunk, hlNum){
+  if (r.chunk) return nH(r.base) + '<span class="chunk moved' + (hlChunk ? ' hl' : '') + '" data-cid="' + r.chunk.id + 'r">' + oH(r.chunk.sym, 'flip') + nH(r.chunk.n) + '</span>';
+  return '<span class="num-only' + (hlNum ? ' hl' : '') + '" data-cid="val">' + nH(r.base) + '</span>';
+}
+function eqInline(ops, R){ return leftHTML(ops, null).replace(/class="xv"/, 'class="xv"') + oH('=') + nH(R); }
+
+var LINE = { start:1, move:1, calc:1 };
+var LABEL = { start:'題目', move:'搬過去', calc:'算一算', verify:'驗算' };
+
+/* ================= 狀態 ================= */
+var EX = [
+  { spec:{ type:'one', op:'+', a:5, b:12 } },
+  { spec:{ type:'one', op:'−', a:3, b:9 } },
+  { spec:{ type:'one', op:'×', a:3, b:18, pre:true } },
+  { spec:{ type:'one', op:'÷', a:4, b:6 } },
+  { spec:{ type:'two', a:2, op:'+', b:3, c:11 } }
+];
+var S = { P:null, i:0, playing:false, tab:'ex-1' };
+var timers = [], anims = [];
+function later(fn, ms){ var id = setTimeout(fn, ms); timers.push(id); return id; }
+function clearAll(){
+  timers.forEach(clearTimeout); timers = [];
+  anims.forEach(function(a){ try { a.cancel(); } catch(e){} }); anims = [];
+  var fl = document.querySelectorAll('.flyer'); for (var i = 0; i < fl.length; i++) fl[i].remove();
+}
+
+/* ================= 天平 ================= */
+var stage = $('bal-stage'), itemsEl = $('bal-items');
+var PT = 226;  /* 盤面高度：物件底部 */
+var E = null;
+function resetE(){ E = { L:{ x:[], xs:[], bk:[], w:[], fill:[] }, R:{ w:[] } }; }
+resetE();
+function mk(kind, n){
+  var e = document.createElement('div');
+  e.className = 'item it-' + kind; e.dataset.k = kind; e.setAttribute('aria-hidden', 'true');
+  if (kind === 'x'){ e.innerHTML = '<var>x</var>'; e._w = 34; e._h = 34; }
+  else if (kind === 'w'){ e.textContent = '1'; e._w = 22; e._h = 22; }
+  else if (kind === 'xs'){
+    var s = ''; for (var i = 0; i < n; i++) s += '<i class="sl' + (i === 0 ? ' on' : '') + '"></i>';
+    e.innerHTML = '<span class="xs-lab"><var>x</var>÷ ' + n + '</span><span class="xs-body" style="grid-template-columns:repeat(' + n + ',1fr)">' + s + '</span>';
+    e._w = 34; e._h = 34;
+  } else if (kind === 'bk'){
+    var cols = Math.min(n, 5), rows = Math.ceil(n / 5), t = '';
+    for (var j = 0; j < n; j++) t += '<i></i>';
+    e.innerHTML = '<span class="bk-lab">少 ' + n + '</span><span class="bk-slots" style="grid-template-columns:repeat(' + cols + ',14px)">' + t + '</span>';
+    e._w = cols * 16 + 10; e._h = rows * 16 + 24;
+    e.style.width = e._w + 'px'; e.style.height = e._h + 'px';
+  }
+  return e;
+}
+function geom(){
+  var W = stage.clientWidth || 340;
+  var panW = Math.min(W * 0.42, 240);
+  return { W:W, panW:panW, cx:{ L:W * 0.25, R:W * 0.75 } };
+}
+function flow(list, cx, maxW, bottom){
+  var rows = [], row = { els:[], w:0, h:0 };
+  list.forEach(function(e){
+    var add = row.els.length ? e._w + 3 : e._w;
+    if (row.els.length && row.w + add > maxW){ rows.push(row); row = { els:[], w:0, h:0 }; add = e._w; }
+    row.w += add; row.els.push(e); row.h = Math.max(row.h, e._h);
+  });
+  if (row.els.length) rows.push(row);
+  var y = bottom;
+  rows.forEach(function(r){
+    var x = cx - r.w / 2;
+    r.els.forEach(function(e){ e._x = x; e._y = y - e._h; x += e._w + 3; });
+    y -= r.h + 3;
+  });
+  return y;
+}
+function addMark(cls, text, x, y, h){
+  var d = document.createElement('div'); d.className = cls; d.setAttribute('aria-hidden', 'true');
+  d.style.left = x + 'px'; d.style.top = y + 'px';
+  if (h) d.style.height = h + 'px';
+  if (text) d.textContent = text;
+  itemsEl.appendChild(d);
+}
+function layout(opt, fresh){
+  opt = opt || {};
+  var g = geom();
+  ['L','R'].forEach(function(s){
+    var p = $('plate-' + s); p.style.left = (g.cx[s] - g.panW / 2) + 'px'; p.style.width = g.panW + 'px';
+  });
+  var old = itemsEl.querySelectorAll('.gsep,.glabel'); for (var i = 0; i < old.length; i++) old[i].remove();
+  ['L','R'].forEach(function(s){
+    var cx = g.cx[s], kinds = s === 'L' ? ['x','xs','bk','w'] : ['w'];
+    var G = opt.groups && opt.groups[s];
+    if (G && G > 1){
+      var colW = g.panW / G, left = cx - g.panW / 2, cols = [];
+      for (var c = 0; c < G; c++) cols.push([]);
+      kinds.forEach(function(k){
+        var arr = E[s][k];
+        arr.forEach(function(e, idx){
+          var col = e.dataset.col !== undefined ? +e.dataset.col : Math.min(G - 1, Math.floor(idx * G / arr.length));
+          e.dataset.col = col; cols[col].push(e);
+        });
+      });
+      var top = PT;
+      cols.forEach(function(list, c){ top = Math.min(top, flow(list, left + c * colW + colW / 2, colW - 4, PT)); });
+      for (var c2 = 1; c2 < G; c2++) addMark('gsep', '', left + c2 * colW, top - 4, PT - top + 4);
+      if (opt.label === 'one') addMark('glabel', '1 份', left + colW / 2, top - 30);
+      if (opt.label && opt.label !== 'one' && s === 'R') addMark('glabel', opt.label, cx, top - 30);
+    } else {
+      var ground = [];
+      kinds.forEach(function(k){ ground = ground.concat(E[s][k]); });
+      flow(ground, cx, g.panW - 8, PT);
+    }
+  });
+  if (E.L.fill.length && E.L.bk[0]){
+    var b = E.L.bk[0];
+    E.L.fill.forEach(function(e, i){
+      var scx = b._x + 6 + (i % 5) * 16 + 7, scy = b._y + 20 + Math.floor(i / 5) * 16 + 7;
+      e._x = scx - 11; e._y = scy - 11;
+    });
+  }
+  if (fresh && fresh.size){
+    fresh.forEach(function(e){ e.style.transition = 'none'; e.style.opacity = '0'; e.style.transform = 'translate(' + e._x + 'px,' + (e._y - 90) + 'px)'; });
+    void itemsEl.offsetWidth;
+    fresh.forEach(function(e){ e.style.transition = ''; e.style.opacity = ''; });
+  }
+  var all = itemsEl.querySelectorAll('.item');
+  for (var j = 0; j < all.length; j++){
+    var e = all[j];
+    if (e._x !== undefined && !e.classList.contains('gone')) e.style.transform = 'translate(' + e._x + 'px,' + e._y + 'px)';
+  }
+}
+function build(b){
+  itemsEl.innerHTML = ''; resetE();
+  stage.classList.add('instant');
+  function add(s, k, n){ var e = mk(k, n); itemsEl.appendChild(e); E[s][k].push(e); }
+  var i;
+  if (b.L.slices) add('L', 'xs', b.L.slices); else for (i = 0; i < b.L.x; i++) add('L', 'x');
+  if (b.L.basket) add('L', 'bk', b.L.basket);
+  for (i = 0; i < b.L.plus; i++) add('L', 'w');
+  for (i = 0; i < b.R.w; i++) add('R', 'w');
+  layout();
+  void stage.offsetWidth;
+  stage.classList.remove('instant');
+}
+function kill(e, mode){
+  e.classList.add('gone', mode === 'lift' ? 'gone-lift' : 'gone-pop');
+  later(function(){ e.remove(); }, 750);
+}
+/* 回傳天平動畫所需時間（ms） */
+function balAnim(st, pb){
+  var n = st.op.n, sym = st.op.sym;
+  if (sym === '+'){
+    var gl = E.L.w.splice(E.L.w.length - n), gr = E.R.w.splice(E.R.w.length - n), both = gl.concat(gr);
+    both.forEach(function(e){ e.classList.add('marked'); });
+    later(function(){ both.forEach(function(e){ kill(e, 'lift'); }); }, 650);
+    later(function(){ layout(); }, 1200);
+    return 1500;
+  }
+  if (sym === '−'){
+    later(function(){
+      var fresh = new Set(), e, i;
+      for (i = 0; i < n; i++){ e = mk('w'); e.classList.add('mini'); itemsEl.appendChild(e); E.L.fill.push(e); fresh.add(e); }
+      for (i = 0; i < n; i++){ e = mk('w'); itemsEl.appendChild(e); E.R.w.push(e); fresh.add(e); }
+      layout(null, fresh);
+    }, 250);
+    later(function(){
+      var bk = E.L.bk.splice(0), fl = E.L.fill.splice(0);
+      bk.forEach(function(e){ e.classList.add('full'); });
+      later(function(){ bk.concat(fl).forEach(function(e){ kill(e, 'pop'); }); }, 420);
+    }, 1050);
+    later(function(){ layout(); }, 1750);
+    return 2000;
+  }
+  if (sym === '×'){
+    later(function(){ layout({ groups:{ L:n, R:n }, label:'one' }); }, 300);
+    later(function(){
+      ['L','R'].forEach(function(s){
+        ['x','w'].forEach(function(k){
+          var keep = [], gone = [];
+          E[s][k].forEach(function(e){ (e.dataset.col === '0' ? keep : gone).push(e); });
+          E[s][k] = keep; gone.forEach(function(e){ kill(e, 'lift'); });
+        });
+      });
+      var m = itemsEl.querySelectorAll('.gsep'); for (var i = 0; i < m.length; i++) m[i].remove();
+    }, 1600);
+    later(function(){
+      ['L','R'].forEach(function(s){ ['x','w'].forEach(function(k){ E[s][k].forEach(function(e){ delete e.dataset.col; }); }); });
+      layout();
+    }, 2150);
+    return 2400;
+  }
+  /* ÷ ：兩邊都變成 n 倍 */
+  var v = pb.R.w;
+  later(function(){
+    var xs = E.L.xs[0]; if (xs) xs.classList.add('fill');
+    E.R.w.forEach(function(e){ e.dataset.col = 0; });
+    var fresh = new Set();
+    for (var i = 0; i < (n - 1) * v; i++){ var e = mk('w'); e.dataset.col = 1 + Math.floor(i / v); itemsEl.appendChild(e); E.R.w.push(e); fresh.add(e); }
+    layout({ groups:{ R:n }, label:'變成 ' + n + ' 份一樣多' }, fresh);
+  }, 300);
+  later(function(){
+    E.L.xs.splice(0).forEach(function(e){ e.remove(); });
+    var x = mk('x'); itemsEl.appendChild(x); E.L.x.push(x);
+    stage.classList.add('instant');
+    layout({ groups:{ R:n }, label:'變成 ' + n + ' 份一樣多' });
+    void stage.offsetWidth; stage.classList.remove('instant');
+  }, 1500);
+  later(function(){ E.R.w.forEach(function(e){ delete e.dataset.col; }); layout(); }, 2000);
+  return 2300;
+}
+function showBalance(st, animFrom){
+  var b = st.bal, opTxt = st.type === 'move' ? (st.inv + ' ' + st.op.n) : '';
+  $('op-L').textContent = opTxt; $('op-R').textContent = opTxt;
+  $('op-L').classList.toggle('show', !!opTxt); $('op-R').classList.toggle('show', !!opTxt);
+  $('bal-cap').textContent = b.fade ? '天平這一步先休息，請看作業簿。' : st.cap;
+  if (b.fade){
+    itemsEl.innerHTML = ''; resetE();
+    stage.classList.add('is-faded');
+    $('bal-fade-msg').textContent = FADE[b.fade];
+    stage.setAttribute('aria-label', '天平：' + FADE[b.fade]);
+    return 0;
+  }
+  stage.classList.remove('is-faded');
+  stage.setAttribute('aria-label', '天平：' + st.cap);
+  if (animFrom && !animFrom.fade && st.type === 'move'){
+    build(animFrom);
+    return balAnim(st, animFrom);
+  }
+  build(b);
+  return 0;
+}
+if (window.ResizeObserver){
+  var rzT = null;
+  new ResizeObserver(function(){
+    if (rzT) cancelAnimationFrame(rzT);
+    rzT = requestAnimationFrame(function(){
+      if (!S.P || stage.classList.contains('is-faded')) return;
+      var st = S.P.steps[S.i];
+      if (!st.bal.fade) build(st.bal);
+    });
+  }).observe(stage);
+}
+
+/* ================= 作業簿 ================= */
+var linesEl = $('lines'), resultEl = $('result'), boardPanel = $('board-panel');
+function lineEl(j){ return linesEl.querySelector('.eqline[data-step="' + j + '"]'); }
+function renderBoard(){
+  var P = S.P, i = S.i, h = '', lastLine = 0, j;
+  for (j = 0; j <= i; j++) if (LINE[P.steps[j].type]) lastLine = j;
+  for (j = 0; j <= i; j++){
+    var st = P.steps[j];
+    if (!LINE[st.type]) continue;
+    var nxt = P.steps[j+1], circleId = (j + 1 <= i && nxt && nxt.type === 'move') ? nxt.op.id : null;
+    var cur = j === lastLine, tag = '';
+    if (st.type === 'move') tag = '<span class="tag-pen">兩邊都 ' + st.inv + ' ' + st.op.n + '</span>';
+    if (st.type === 'calc') tag = '<span class="calc">' + nH(st.from) + oH(st.inv) + nH(st.op.n) + oH('=') + '<b class="n">' + st.to + '</b></span>';
+    h += '<div class="eqline' + (cur ? ' current' : '') + '" data-step="' + j + '">' +
+         '<div class="lhs">' + leftHTML(st.left, circleId) + '</div>' +
+         '<div class="eqs">=</div>' +
+         '<div class="rhs">' + rightHTML(st.right, cur && st.type === 'move', st.type === 'calc') + '</div>' +
+         '<div class="tag">' + tag + '</div></div>';
+  }
+  linesEl.innerHTML = h;
+  var last = P.steps[i];
+  resultEl.innerHTML = last.type === 'verify' ? verifyHTML(P) : '';
+}
+function verifyHTML(P){
+  var ops = P.ops, sol = P.sol, R0 = P.R0, expr;
+  if (ops.length === 2){
+    var a = ops[0].n, o = ops[1];
+    expr = nH(a) + oH('×') + '<span class="hl">' + nH(sol) + '</span>' + oH(o.sym) + nH(o.n) + oH('=') + nH(a * sol) + oH(o.sym) + nH(o.n) + oH('=') + nH(R0);
+  } else {
+    var p = ops[0];
+    expr = p.pre
+      ? nH(p.n) + oH('×') + '<span class="hl">' + nH(sol) + '</span>' + oH('=') + nH(R0)
+      : '<span class="hl">' + nH(sol) + '</span>' + oH(p.sym) + nH(p.n) + oH('=') + nH(R0);
+  }
+  return '<div class="result">' +
+    '<p class="rrow">把 <var>x</var>' + oH('=') + '<span class="hl">' + nH(sol) + '</span> 放回題目：</p>' +
+    '<p class="rrow">左邊：' + expr + '</p>' +
+    '<p class="rrow">右邊：' + nH(R0) + '</p>' +
+    '<p class="rrow">左邊 = 右邊 <span class="stamp" id="stamp">✓ 正確</span></p></div>';
+}
+function makeFlyer(from, html){
+  var hb = boardPanel.getBoundingClientRect(), fr = from.getBoundingClientRect();
+  var f = document.createElement('span');
+  f.className = 'flyer'; f.setAttribute('aria-hidden', 'true'); f.innerHTML = html;
+  f.style.fontSize = getComputedStyle(linesEl).fontSize;
+  boardPanel.appendChild(f);
+  var fw = f.offsetWidth, fh = f.offsetHeight;
+  f.style.left = (fr.left - hb.left - boardPanel.clientLeft + fr.width / 2 - fw / 2) + 'px';
+  f.style.top = (fr.top - hb.top - boardPanel.clientTop + fr.height / 2 - fh / 2) + 'px';
+  return f;
+}
+function flight(f, from, to, via, dur, done){
+  var fr = from.getBoundingClientRect(), tr = to.getBoundingClientRect(), vr = via.getBoundingClientRect();
+  var c0x = fr.left + fr.width / 2, c0y = fr.top + fr.height / 2;
+  var c1x = vr.left + vr.width / 2, c1y = Math.min(vr.top, fr.top) - vr.height * 0.55;
+  var c2x = tr.left + tr.width / 2, c2y = tr.top + tr.height / 2;
+  var a = f.animate([
+    { transform:'translate(0px,0px) scale(1)' },
+    { transform:'translate(' + (c1x - c0x) + 'px,' + (c1y - c0y) + 'px) scale(1.35)', offset:0.5 },
+    { transform:'translate(' + (c2x - c0x) + 'px,' + (c2y - c0y) + 'px) scale(1)' }
+  ], { duration:dur, easing:'ease-in-out', fill:'forwards' });
+  anims.push(a);
+  a.onfinish = function(){ f.remove(); if (done) done(); };
+}
+function animateBoard(i, t0){
+  var st = S.P.steps[i], cur = lineEl(i);
+  if (st.type === 'move'){
+    var prev = lineEl(i - 1);
+    if (!cur || !prev) return 0;
+    var src = prev.querySelector('[data-cid="' + st.op.id + '"]');
+    var dst = cur.querySelector('[data-cid="' + st.op.id + 'r"]');
+    var eqs = cur.querySelector('.eqs'), tag = cur.querySelector('.tag');
+    if (!src || !dst) return 0;
+    dst.classList.add('pending'); tag.classList.add('pending');
+    src.classList.remove('circled');
+    later(function(){ src.classList.add('circled', 'draw'); }, Math.max(0, t0 - 350));
+    later(function(){
+      var n = st.op.n;
+      var before = st.op.pre ? nH(n) + oH('×') : oH(st.op.sym) + nH(n);
+      var f = makeFlyer(src, before + '<span class="fnote">翻！</span>');
+      flight(f, src, dst, eqs, 1500, function(){
+        dst.classList.remove('pending'); dst.classList.add('arrive');
+        tag.classList.remove('pending');
+      });
+      later(function(){
+        f.innerHTML = oH(st.inv) + nH(n) + '<span class="fnote">翻！</span>';
+        f.classList.add('flipped');
+        lightRule(st.op.sym);
+        $('why').classList.remove('wait');
+      }, 750);
+    }, t0);
+    return t0 + 1500;
+  }
+  if (st.type === 'calc'){
+    var num = cur.querySelector('[data-cid="val"]'), tg = cur.querySelector('.tag');
+    num.classList.add('pending'); tg.classList.add('pending');
+    later(function(){ tg.classList.remove('pending'); tg.classList.add('writing'); }, 200);
+    later(function(){ num.classList.remove('pending'); num.classList.add('arrive'); }, 1100);
+    return 1400;
+  }
+  if (st.type === 'verify'){
+    var rows = resultEl.querySelectorAll('.rrow'), stamp = $('stamp');
+    for (var r = 0; r < rows.length; r++) rows[r].classList.add('pending');
+    if (stamp) stamp.classList.add('wait');
+    Array.prototype.forEach.call(rows, function(row, k){
+      later(function(){ row.classList.remove('pending'); row.classList.add('rise'); }, 150 + k * 500);
+    });
+    later(function(){ if (stamp){ stamp.classList.remove('wait'); stamp.classList.add('go'); } }, 150 + rows.length * 500);
+    return 150 + rows.length * 500 + 600;
+  }
+  if (cur) cur.classList.add('arrive');
+  return 600;
+}
+function lightRule(sym){
+  ['+','−','×','÷'].forEach(function(s){ $(RULE_ID[s]).classList.toggle('lit', s === sym); });
+}
+
+/* ================= 畫面 ================= */
+function renderText(anim){
+  var st = S.P.steps[S.i];
+  $('say').textContent = st.say;
+  $('why').innerHTML = st.why;
+  $('why').classList.toggle('wait', !!anim && st.type === 'move');
+}
+function renderControls(){
+  var N = S.P.steps.length, st = S.P.steps[S.i];
+  $('btn-prev').disabled = S.i === 0;
+  $('btn-next').disabled = S.i >= N - 1;
+  $('btn-play').textContent = S.playing ? '暫停' : '自動播放';
+  $('btn-play').setAttribute('aria-pressed', S.playing ? 'true' : 'false');
+  $('stepinfo').textContent = '第 ' + (S.i + 1) + ' 步／共 ' + N + ' 步：' + LABEL[st.type];
+  var dots = $('dots').querySelectorAll('.dot');
+  for (var k = 0; k < dots.length; k++){
+    dots[k].classList.toggle('done', k < S.i);
+    if (k === S.i) dots[k].setAttribute('aria-current', 'step'); else dots[k].removeAttribute('aria-current');
+  }
+}
+function renderDots(){
+  var h = '';
+  S.P.steps.forEach(function(st, k){
+    h += '<li><button type="button" class="dot" id="step-dot-' + k + '" data-k="' + k + '" aria-label="第 ' + (k + 1) + ' 步：' + LABEL[st.type] + '" title="' + LABEL[st.type] + '">' + (k + 1) + '</button></li>';
+  });
+  $('dots').innerHTML = h;
+}
+function goTo(i, animate){
+  var P = S.P, N = P.steps.length;
+  i = Math.max(0, Math.min(N - 1, i));
+  clearAll();
+  var prevI = S.i; S.i = i;
+  var anim = !!animate && !reduced() && i === prevI + 1;
+  var st = P.steps[i];
+  renderBoard(); renderText(anim); renderControls();
+  var D = showBalance(st, anim && i > 0 ? P.steps[i-1].bal : null);
+  lightRule(st.type === 'move' && !anim ? st.op.sym : null);
+  var total = 0;
+  if (anim) total = animateBoard(i, D > 0 ? D : 150);
+  if (S.playing){
+    if (i >= N - 1){ S.playing = false; renderControls(); }
+    else later(function(){ goTo(S.i + 1, true); }, (reduced() ? 2400 : total + 2200));
+  }
+}
+function stopPlay(){ S.playing = false; if (S.P) renderControls(); }
+function next(){ stopPlay(); goTo(S.i + 1, true); }
+function prev(){ stopPlay(); goTo(S.i - 1, false); }
+function loadProblem(P, tabId){
+  stopPlay(); clearAll();
+  S.P = P; S.i = 0; S.tab = tabId;
+  var tabs = document.querySelectorAll('.tab');
+  for (var k = 0; k < tabs.length; k++) tabs[k].setAttribute('aria-pressed', tabs[k].id === tabId ? 'true' : 'false');
+  $('board-title').textContent = eqPlain(P.steps[0]);
+  renderDots();
+  goTo(0, false);
+}
+
+/* ================= 事件 ================= */
+$('btn-next').addEventListener('click', next);
+$('btn-prev').addEventListener('click', prev);
+$('btn-reset').addEventListener('click', function(){ stopPlay(); goTo(0, false); });
+$('btn-play').addEventListener('click', function(){
+  if (S.playing){ stopPlay(); clearAll(); goTo(S.i, false); return; }
+  S.playing = true;
+  if (S.i >= S.P.steps.length - 1){ goTo(0, false); }
+  else { renderControls(); later(function(){ goTo(S.i + 1, true); }, 300); }
+});
+$('dots').addEventListener('click', function(e){
+  var b = e.target.closest('.dot'); if (!b) return;
+  var k = +b.dataset.k; stopPlay();
+  goTo(k, k === S.i + 1);
+});
+$('tabs').addEventListener('click', function(e){
+  var b = e.target.closest('.tab'); if (!b) return;
+  if (b.dataset.ex === 'custom'){ if (S.custom) loadProblem(S.custom, 'ex-custom'); return; }
+  loadProblem(solve(EX[+b.dataset.ex].spec), b.id);
+});
+document.addEventListener('keydown', function(e){
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  var t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+  if (e.key === 'ArrowRight'){ e.preventDefault(); next(); }
+  else if (e.key === 'ArrowLeft'){ e.preventDefault(); prev(); }
+});
+Array.prototype.forEach.call(document.querySelectorAll('.flip'), function(card){
+  card.addEventListener('click', function(){
+    var on = card.getAttribute('aria-pressed') !== 'true';
+    card.setAttribute('aria-pressed', on ? 'true' : 'false');
+    card.querySelector('.front').setAttribute('aria-hidden', on ? 'true' : 'false');
+    card.querySelector('.back').setAttribute('aria-hidden', on ? 'false' : 'true');
+  });
+});
+
+/* 自己出題 */
+function readNum(id){ var s = String($(id).value).trim(); return /^\d+$/.test(s) ? Number(s) : NaN; }
+function readCustom(){
+  if ($('custom-type').value === 'one') return { type:'one', op:OPMAP[$('one-op').value], a:readNum('one-a'), b:readNum('one-b') };
+  return { type:'two', a:readNum('two-a'), op:OPMAP[$('two-op').value], b:readNum('two-b'), c:readNum('two-c') };
+}
+function showNum(v){ return Number.isNaN(v) ? '?' : String(v); }
+function validateCustom(){
+  var spec = readCustom(), chk = check(spec), pv;
+  if (spec.type === 'one') pv = '<var>x</var>' + oH(spec.op) + nH(showNum(spec.a)) + oH('=') + nH(showNum(spec.b));
+  else pv = nH(showNum(spec.a)) + oH('×') + '<var>x</var>' + oH(spec.op) + nH(showNum(spec.b)) + oH('=') + nH(showNum(spec.c));
+  $('custom-preview').innerHTML = '你的題目：' + pv;
+  var msg = $('custom-msg');
+  msg.textContent = chk.ok ? '可以算！按下面的按鈕開始。' : chk.msg;
+  msg.classList.toggle('ok', chk.ok);
+  $('btn-custom').disabled = !chk.ok;
+  return { spec:spec, chk:chk };
+}
+$('custom-type').addEventListener('change', function(){
+  var one = this.value === 'one';
+  $('form-one').hidden = !one; $('form-two').hidden = one;
+  validateCustom();
+});
+['one-op','one-a','one-b','two-a','two-op','two-b','two-c'].forEach(function(id){
+  $(id).addEventListener('input', validateCustom);
+  $(id).addEventListener('change', validateCustom);
+});
+$('custom-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  var r = validateCustom();
+  if (!r.chk.ok) return;
+  var P = solve(r.spec);
+  if (!P.ok){ $('custom-msg').textContent = P.msg; return; }
+  S.custom = P;
+  var tab = $('ex-custom'); tab.hidden = false;
+  $('ex-custom-eq').innerHTML = eqInline(P.ops, P.R0);
+  loadProblem(P, 'ex-custom');
+  $('custom-msg').textContent = '好了！往上看，按「下一步」開始。';
+  $('tabs').scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block:'start' });
+});
+
+/* ================= 自我檢查 ================= */
+function selfCheck(){
+  var cases = [
+    { name:'第 1 題 x + 5 = 12', spec:EX[0].spec, expect:7 },
+    { name:'第 2 題 x − 3 = 9', spec:EX[1].spec, expect:12 },
+    { name:'第 3 題 3 × x = 18', spec:EX[2].spec, expect:6 },
+    { name:'第 4 題 x ÷ 4 = 6', spec:EX[3].spec, expect:24 },
+    { name:'第 5 題 2 × x + 3 = 11', spec:EX[4].spec, expect:4 },
+    { name:'會變負數 x + 9 = 4', spec:{ type:'one', op:'+', a:9, b:4 }, expect:'neg' },
+    { name:'會變負數 3 × x + 20 = 11', spec:{ type:'two', a:3, op:'+', b:20, c:11 }, expect:'neg' },
+    { name:'除不盡 x × 4 = 18', spec:{ type:'one', op:'×', a:4, b:18 }, expect:'frac' },
+    { name:'除不盡 2 × x + 3 = 10', spec:{ type:'two', a:2, op:'+', b:3, c:10 }, expect:'frac' },
+    { name:'空白欄位', spec:{ type:'one', op:'+', a:NaN, b:5 }, expect:'range' }
+  ];
+  var out = [], allOk = true;
+  cases.forEach(function(c){
+    var P = solve(c.spec), errs = [], lines = [];
+    if (typeof c.expect === 'string'){
+      if (P.ok || P.code !== c.expect) errs.push('應該被擋下（' + c.expect + '）');
+      out.push({ name:c.name, ok:!errs.length, errs:errs, result:P.ok ? '沒被擋' : P.msg });
+      allOk = allOk && !errs.length; return;
+    }
+    if (!P.ok){ errs.push('被擋下'); out.push({ name:c.name, ok:false, errs:errs }); allOk = false; return; }
+    if (P.sol !== c.expect) errs.push('答案錯');
+    P.steps.forEach(function(st, j){
+      var lv = evalLeft(st.left, P.sol);
+      var rv = st.right.chunk ? applyOp(st.right.base, st.right.chunk.sym, st.right.chunk.n) : st.right.base;
+      if (lv !== rv) errs.push('第' + (j + 1) + '步不相等');
+      [st.right.base, rv, lv].forEach(function(v){ if (!Number.isInteger(v) || v < 0) errs.push('第' + (j + 1) + '步出現負數或小數'); });
+      var b = st.bal, balTxt;
+      if (!b.fade){
+        var ln = (b.L.slices ? P.sol / b.L.slices : b.L.x * P.sol) + b.L.plus - b.L.basket;
+        if (ln !== b.R.w) errs.push('第' + (j + 1) + '步天平不平衡');
+        if (st.type === 'move' && b.R.w !== st.to) errs.push('第' + (j + 1) + '步天平和算式不同步');
+        balTxt = st.cap;
+      } else balTxt = '（天平淡出）' + FADE[b.fade];
+      var eqTxt = st.type === 'verify' ? ('代回：' + evalLeft(P.ops, P.sol) + ' = ' + P.R0 + '，蓋「✓ 正確」') : eqPlain(st);
+      lines.push((j + 1) + '. [' + LABEL[st.type] + '] 算式：' + eqTxt + '｜天平：' + balTxt);
+    });
+    if (evalLeft(P.ops, P.sol) !== P.R0) errs.push('驗算失敗');
+    allOk = allOk && !errs.length;
+    out.push({ name:c.name, ok:!errs.length, errs:errs, answer:'x = ' + P.sol, steps:lines });
+  });
+  return { allOk:allOk, cases:out };
+}
+window.eqSelfCheck = selfCheck;
+
+/* ================= 啟動 ================= */
+EX.forEach(function(ex, k){
+  var P = solve(ex.spec);
+  $('ex-' + (k + 1) + '-eq').innerHTML = eqInline(P.ops, P.R0);
+});
+loadProblem(solve(EX[0].spec), 'ex-1');
+validateCustom();
+try {
+  var res = selfCheck();
+  document.body.setAttribute('data-selfcheck', JSON.stringify(res));
+  if (window.console) console.log('[自我檢查]', res.allOk ? '全部通過' : '有錯誤', res);
+} catch (err){
+  document.body.setAttribute('data-selfcheck', JSON.stringify({ allOk:false, error:String(err) }));
+}
+})();
+</script>
+
+</body>
+</html>
